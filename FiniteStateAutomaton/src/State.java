@@ -122,7 +122,9 @@ public class State {
     }
 
     public Map<Character, Integer> getNonRecursiveMap() {
-        return transition.entrySet().stream().collect(HashMap::new, (m, v) -> m.put(v.getKey(), v.getValue().getStateID()), HashMap::putAll);
+        return
+                transition.entrySet().stream()
+                        .collect(HashMap::new, (m, v) -> m.put(v.getKey(), v.getValue().getStateID()), HashMap::putAll);
     }
 
     @Override
@@ -130,12 +132,12 @@ public class State {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         State state = (State) o;
-        return stateID == state.stateID && isFinal == state.isFinal && Objects.equals(getNonRecursiveMap(), state.getNonRecursiveMap());
+        return stateID == state.stateID;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(stateID, getNonRecursiveMap(), isFinal);
+        return Objects.hash(stateID);
     }
 
     public int equivalenceHashCode() {

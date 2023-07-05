@@ -13,6 +13,13 @@ public class Main {
         LexiconMinimalAutomaton automaton = new LexiconMinimalAutomaton(words);
         assert automaton.states.size() == 18 : automaton.states.size();
         System.out.println("Test 1: " + automaton.getStates().size());
+
+        RegexToDfa regexToDfa1 = new RegexToDfa("((a|b)*)");
+        RegexState dfa1 = regexToDfa1.createDFA();
+        RegexState automatonRegexState = automaton.getStateTreeRoot();
+        DFAIntersector intersector = new DFAIntersector(dfa1, automatonRegexState);
+        Set<String> allWords = intersector.getIntersection();
+        System.out.printf("Matching words count: %s %s \n", allWords.size(), allWords);
     }
 
     static void test2() {
@@ -113,14 +120,29 @@ public class Main {
             dictionaryWords.add(st);
         }
 
-        dictionaryWords = dictionaryWords.subList(0, 10000);
+//        dictionaryWords = dictionaryWords.subList(0, 100000);
+
+        long startTime = System.nanoTime();
 
         LexiconMinimalAutomaton automaton = new LexiconMinimalAutomaton(dictionaryWords);
 
+        long endTime = System.nanoTime();
+        System.out.println("Took " + (endTime - startTime)/1e9 + " s");
+
+
         System.out.println(automaton.getStates().size());
-//        Integer transitionCount = automaton.transition.keySet().stream().map(x -> automaton.transition.get(x).size()).reduce(0, Integer::sum);
-//        System.out.println(transitionCount);
-        System.out.println(automaton.onlyHashEquals);
+        Integer transitionCount = automaton.states.stream().map(state -> state.getTransitions().size()).reduce(0, Integer::sum);
+        System.out.println(transitionCount);
+
+            RegexToDfa regexToDfa1 = new RegexToDfa("((a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z|S)*)");
+            RegexState dfa1 = regexToDfa1.createDFA();
+            RegexState automatonRegexState = automaton.getStateTreeRoot();
+            DFAIntersector intersector = new DFAIntersector(dfa1, automatonRegexState);
+            Set<String> allWords = intersector.getIntersection();
+            System.out.printf("Matching words count: %s %s \n", allWords.size(), dictionaryWords.size());
+
+            dictionaryWords.removeAll(allWords);
+            System.out.println(dictionaryWords);
         }
         catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -135,30 +157,22 @@ public class Main {
 
         long endTime = System.nanoTime();
 
-        System.out.println("Took " + (endTime - startTime)/1e9 + " s");
+//        System.out.println("Took " + (endTime - startTime)/1e9 + " s");
     }
 
     public static void main(String[] args) throws IOException {
         testConstructorWithNaiveInsertion();
-//        test2();
+        test2();
         test3();
         test4();
 
 
-//        testTime(Main::dictionaryTest);
+        testTime(Main::dictionaryTest);
 
 
 
 
-//        System.out.println(automatonNew.finalStates);
 
-
-            List<String> wordsToAdd =
-                Arrays.asList("bb", "abaa", "aabaabb", "baabba", "aaababa", "bababa", "bbaab", "bbab");
-//
-//        for(String word : wordsToAdd) {
-//            automaton.insertWord(word);
-//        }
 //
 ////        System.out.println(automaton.getStates().stream().sorted().collect(Collectors.toList()));
 //

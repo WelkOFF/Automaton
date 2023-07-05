@@ -104,9 +104,9 @@ public class LexiconMinimalAutomaton {
                 inverseMapping.get(stateSequence.get(i).equivalenceHashCode()).remove(stateSequence.get(i));
                 finalStates.remove(stateSequence.get(i));
 
-                for (State currentState : states) {
-                    currentState.redirectFromTo(stateSequence.get(i), equivalentState);
-                }
+                stateSequence.get(i-1).redirectFromTo(stateSequence.get(i), equivalentState);
+            } else {
+                break;
             }
         }
     }
@@ -207,27 +207,24 @@ public class LexiconMinimalAutomaton {
             deleteUnusedStates(s);
         }
     }
-//
-//    public RegexState getStateTreeRoot() {
-//        Map<Integer, RegexState> indexToState = new TreeMap<>();
-//        for(int stateID : states){
-//            indexToState.put(stateID, new RegexState(stateID));
-//            if (finalStates.contains(stateID)) {
-//                indexToState.get(stateID).setAccept();
-//            }
-//        }
-//
-//        for(int stateID : transition.keySet()){
-//            for(Map.Entry<Character, Integer> entry : transition.get(stateID).entrySet()){
-//                if(indexToState.get(entry.getValue()) == null){
-//                    System.out.println("null");
-//                }
-//                indexToState.get(stateID).addMove(String.valueOf(entry.getKey()), indexToState.get(entry.getValue()));
-//            }
-//        }
-//
-//        return indexToState.get(startState);
-//    }
+
+    public RegexState getStateTreeRoot() {
+        Map<Integer, RegexState> indexToState = new TreeMap<>();
+        for(State current : states){
+            indexToState.put(current.getStateID(), new RegexState(current.getStateID()));
+            if (finalStates.contains(current)) {
+                indexToState.get(current.getStateID()).setAccept();
+            }
+        }
+
+        for(State current : states){
+            for(Map.Entry<Character, Integer> entry : current.getNonRecursiveMap().entrySet()){
+                indexToState.get(current.getStateID()).addMove(String.valueOf(entry.getKey()), indexToState.get(entry.getValue()));
+            }
+        }
+
+        return indexToState.get(startState.getStateID());
+    }
 
     static void test1() {
         List<String> words =
